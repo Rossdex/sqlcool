@@ -7,40 +7,44 @@ enum DatabaseChange { insert, update, delete }
 class DatabaseChangeEvent {
   /// Default database change event
   DatabaseChangeEvent(
-      {@required this.type,
-      @required this.value,
-      @required this.query,
-      @required this.executionTime});
+    {@required this.type,
+    @required this.value,
+    @required this.query,
+    @required this.executionTime,
+    @required this.table});
 
-  /// Type of the change
-  DatabaseChange type;
+/// Type of the change
+DatabaseChange type;
 
-  /// Change value: number of items affected
-  int value;
+/// The Table being changed
+String table;
 
-  /// The query that made the changes
-  String query;
+/// Change value: number of items affected
+int value;
 
-  /// The query execution time
-  num executionTime;
+/// The query that made the changes
+String query;
 
-  /// Human readable format
-  @override
-  String toString() {
-    String s = "";
-    if (value > 1) {
-      s = "s";
-    }
-    String msg = "";
-    if (type == DatabaseChange.delete) {
-      msg += "$value item$s deleted";
-    } else if (type == DatabaseChange.update) {
-      msg += "$value item$s updated";
-    } else if (type == DatabaseChange.insert) {
-      msg += "$value item$s inserted";
-    }
-    msg += "\n$type : $value";
-    msg += "\n$query in $executionTime ms";
-    return msg;
+/// The query execution time
+num executionTime;
+
+/// Human readable format
+@override
+String toString() {
+  String s = "";
+  if (value > 1) {
+    s = "s";
   }
+  String msg = "";
+  if (type == DatabaseChange.delete) {
+    msg += "$value item$s deleted";
+  } else if (type == DatabaseChange.update) {
+    msg += "$value item$s updated";
+  } else if (type == DatabaseChange.insert) {
+    msg += "$value item$s inserted";
+  }
+  msg += "\n$type : $value";
+  msg += "\n$query in $executionTime ms";
+  return msg;
+}
 }
