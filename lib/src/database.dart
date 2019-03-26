@@ -18,8 +18,7 @@ class Db {
 
   final _mutex = new Lock();
   final Completer<Null> _readyCompleter = Completer<Null>();
-  final StreamController<DatabaseChangeEvent> _changeFeedController =
-      StreamController<DatabaseChangeEvent>.broadcast();
+  final StreamController<DatabaseChangeEvent> _changeFeedController = StreamController<DatabaseChangeEvent>.broadcast();
   File _dbFile;
   bool _isReady = false;
 
@@ -50,14 +49,7 @@ class Db {
   /// The database can be initialized either from an asset file
   /// with the [fromAsset] parameter or from some create table queries
   /// with the [queries] parameter.
-  Future<void> init(
-      {Database database,
-      String path,
-      bool absolutePath = false,
-      List<String> queries = const <String>[],
-      bool verbose = false,
-      String fromAsset = "",
-      bool debug = false}) async {
+  Future<void> init({Database database, String path, bool absolutePath = false, List<String> queries = const <String>[], bool verbose = false, String fromAsset = "", bool debug = false}) async {
     Database sqlDatabase;
     String dbpath;
     if (debug) Sqflite.setDebugModeOn(true);
@@ -81,8 +73,7 @@ class Db {
           try {
             // read
             ByteData data = await rootBundle.load("$fromAsset");
-            bytes =
-                data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+            bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
           } catch (e) {
             throw ("Unable to read database from asset: $e");
           }
@@ -146,8 +137,7 @@ class Db {
   }
 
   /// Execute a query
-  Future<List<Map<String, dynamic>>> query(String q,
-      {bool verbose = false}) async {
+  Future<List<Map<String, dynamic>>> query(String q, {bool verbose = false}) async {
     /// [q] the query to execute
     try {
       if (!_isReady) throw DatabaseNotReady();
@@ -167,14 +157,7 @@ class Db {
   }
 
   /// A select query
-  Future<List<Map<String, dynamic>>> select(
-      {@required String table,
-      String columns = "*",
-      String where,
-      String orderBy,
-      int limit,
-      int offset,
-      bool verbose = false}) async {
+  Future<List<Map<String, dynamic>>> select({@required String table, String columns = "*", String where, String orderBy, int limit, int offset, bool verbose = false}) async {
     /// [table] the table to select from
     /// [columns] the columns to return
     /// [where] the sql where clause
@@ -214,16 +197,7 @@ class Db {
   }
 
   /// A select query with a join
-  Future<List<Map<String, dynamic>>> join(
-      {@required String table,
-      @required String joinTable,
-      @required String joinOn,
-      String columns = "*",
-      int offset = 0,
-      int limit = 100,
-      String orderBy,
-      String where,
-      bool verbose}) async {
+  Future<List<Map<String, dynamic>>> join({@required String table, @required String joinTable, @required String joinOn, String columns = "*", int offset = 0, int limit = 100, String orderBy, String where, bool verbose}) async {
     /// [table] the table to select from
     /// [joinTable] the table to join from
     /// [joinOn] the columns to join
@@ -266,10 +240,7 @@ class Db {
   }
 
   /// Insert a row in a table
-  Future<int> insert(
-      {@required String table,
-      @required Map<String, dynamic> row,
-      bool verbose = false}) async {
+  Future<int> insert({@required String table, @required Map<String, dynamic> row, bool verbose = false}) async {
     /// [table] the table to insert into. [row] is a map of the data
     /// to insert
     ///
@@ -300,12 +271,7 @@ class Db {
         id = await _db.rawInsert(q, datapoint);
         String qStr = "$q $row";
         timer.stop();
-        _changeFeedController.sink.add(DatabaseChangeEvent(
-            type: DatabaseChange.insert,
-            value: 1,
-            query: qStr,
-            executionTime: timer.elapsedMicroseconds,
-            table: table));
+        _changeFeedController.sink.add(DatabaseChangeEvent(type: DatabaseChange.insert, value: 1, query: qStr, executionTime: timer.elapsedMicroseconds, table: table));
         if (verbose) {
           String msg = "$q in ${timer.elapsedMilliseconds} ms";
           print(msg);
@@ -320,11 +286,7 @@ class Db {
   }
 
   /// Update some datapoints in the database
-  Future<int> update(
-      {@required String table,
-      @required Map<String, String> row,
-      @required String where,
-      bool verbose = false}) async {
+  Future<int> update({@required String table, @required Map<String, String> row, @required String where, bool verbose = false}) async {
     /// [table] is the table to use, [row] is a map of the data to update
     /// and [where] the sql where clause
     ///
@@ -350,11 +312,7 @@ class Db {
         updated = await this._db.rawUpdate(q, datapoint);
         String qStr = "$q $datapoint";
         timer.stop();
-        _changeFeedController.sink.add(DatabaseChangeEvent(
-            type: DatabaseChange.update,
-            value: updated,
-            query: qStr,
-            executionTime: timer.elapsedMicroseconds));
+        _changeFeedController.sink.add(DatabaseChangeEvent(type: DatabaseChange.update, value: updated, query: qStr, executionTime: timer.elapsedMicroseconds, table: table));
         if (verbose) {
           String msg = "$q in ${timer.elapsedMilliseconds} ms";
           print(msg);
@@ -370,8 +328,7 @@ class Db {
   }
 
   /// Delete some datapoints from the database
-  Future<int> delete(
-      {@required String table, String where, bool verbose = false}) async {
+  Future<int> delete({@required String table, String where, bool verbose = false}) async {
     /// [table] is the table to use and [where] the sql where clause
     ///
     /// Returns a future with a count of the deleted rows
@@ -387,11 +344,7 @@ class Db {
 
         int deleted = await this._db.rawDelete(q);
         timer.stop();
-        _changeFeedController.sink.add(DatabaseChangeEvent(
-            type: DatabaseChange.delete,
-            value: deleted,
-            query: q,
-            executionTime: timer.elapsedMicroseconds));
+        _changeFeedController.sink.add(DatabaseChangeEvent(type: DatabaseChange.delete, value: deleted, query: q, executionTime: timer.elapsedMicroseconds, table: table));
         if (verbose) {
           String msg = "$q in ${timer.elapsedMilliseconds} ms";
           print(msg);
@@ -407,10 +360,7 @@ class Db {
   }
 
   /// Check if a value exists in the table
-  Future<bool> exists(
-      {@required String table,
-      @required String where,
-      bool verbose = false}) async {
+  Future<bool> exists({@required String table, @required String where, bool verbose = false}) async {
     /// [table] is the table to use and [where] the sql where clause
     ///
     /// Returns a future with true if the data exists
@@ -436,8 +386,7 @@ class Db {
   }
 
   /// count rows in a table
-  Future<int> count(
-      {@required String table, String where, bool verbose = false}) async {
+  Future<int> count({@required String table, String where, bool verbose = false}) async {
     /// [table] is the table to use and [where] the sql where clause
     ///
     /// Returns a future with the count of the rows
@@ -463,7 +412,7 @@ class Db {
     }
   }
 
-  Future<String> transaction({@required action, bool verbose = false}) async {
+  Future<String> transaction(action, String table, [bool verbose = false]) async {
     try {
       if (!_isReady) throw DatabaseNotReady();
       Stopwatch timer = Stopwatch()..start();
@@ -473,9 +422,7 @@ class Db {
       if (verbose) {
         print(msg);
       }
-      _changeFeedController.sink.add(DatabaseChangeEvent(
-          type: DatabaseChange.transaction,
-          executionTime: timer.elapsedMicroseconds));
+      _changeFeedController.sink.add(DatabaseChangeEvent(type: DatabaseChange.transaction, executionTime: timer.elapsedMicroseconds, table: table, value: null));
 
       return msg;
     } on DatabaseNotReady catch (e) {
