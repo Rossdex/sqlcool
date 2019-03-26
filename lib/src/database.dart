@@ -412,7 +412,7 @@ class Db {
     }
   }
 
-  Future<String> transaction({@required action, String table} [bool verbose = false]) async {
+  Future<String> transaction({@required action, String table, bool verbose = false}) async {
     try {
       if (!_isReady) throw DatabaseNotReady();
       Stopwatch timer = Stopwatch()..start();
