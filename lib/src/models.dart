@@ -31,7 +31,7 @@ class DatabaseChangeEvent {
   @override
   String toString() {
     String s = "";
-    if (value > 1) {
+    if (value != null && value > 1) {
       s = "s";
     }
     String msg = "";
