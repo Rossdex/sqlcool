@@ -19,7 +19,7 @@ class DatabaseChangeEvent {
   String table;
 
   /// Change value: number of items affected
-  int value;
+  int value = 0;
 
   /// The query that made the changes
   String query;
