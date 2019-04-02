@@ -286,7 +286,7 @@ class Db {
   }
 
   /// Update some datapoints in the database
-  Future<int> update({@required String table, @required Map<String, String> row, @required String where, bool verbose = false}) async {
+  Future<int> update({@required String table, @required Map<String, dynamic> row,  @required String where, bool verbose = false}) async {
     /// [table] is the table to use, [row] is a map of the data to update
     /// and [where] the sql where clause
     ///
@@ -299,7 +299,7 @@ class Db {
         String pairs = "";
         int n = row.length - 1;
         int i = 0;
-        List<String> datapoint = [];
+        List<dynamic> datapoint = [];
         for (var el in row.keys) {
           pairs = "$pairs$el= ?";
           datapoint.add(row[el]);
@@ -412,11 +412,11 @@ class Db {
     }
   }
 
-  Future<String> transaction({@required action, String table, bool verbose = false}) async {
+  Future<String> transaction({@required Function action, String table, bool verbose = false}) async {
     try {
       if (!_isReady) throw DatabaseNotReady();
       Stopwatch timer = Stopwatch()..start();
-      _db.transaction(action);
+      await _db.transaction(action);
       timer.stop();
       String msg = "Transaction compelete in ${timer.elapsedMilliseconds} ms";
       if (verbose) {
