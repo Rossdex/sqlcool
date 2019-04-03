@@ -307,7 +307,7 @@ class Db {
         Stopwatch timer = Stopwatch()..start();
         deleted = await _db.delete(table, where: "id = ?", whereArgs: [id]);
         timer.stop();
-        _changeFeedController.sink.add(DatabaseChangeEvent(type: DatabaseChange.delete, value: deleted, query: q, executionTime: timer.elapsedMicroseconds, table: table));
+        _changeFeedController.sink.add(DatabaseChangeEvent(type: DatabaseChange.delete, value: deleted, query: deleted.toString(), executionTime: timer.elapsedMicroseconds, table: table));
         if (verbose) {
           String msg = "Delete Complete in ${timer.elapsedMilliseconds} ms";
           print(msg);
