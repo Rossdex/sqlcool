@@ -255,7 +255,7 @@ class Db {
         timer.stop();
         _changeFeedController.sink.add(DatabaseChangeEvent(type: DatabaseChange.insert, value: 1, query: qStr.toString(), executionTime: timer.elapsedMicroseconds, table: table));
         if (verbose) {
-          String msg = "Query complete in ${timer.elapsedMilliseconds} ms";
+          String msg = "Insert complete in ${timer.elapsedMilliseconds} ms";
           print(msg);
         }
       } on DatabaseNotReady catch (e) {
@@ -283,7 +283,7 @@ class Db {
         timer.stop();
         _changeFeedController.sink.add(DatabaseChangeEvent(type: DatabaseChange.update, value: updated, query: qStr.toString(), executionTime: timer.elapsedMicroseconds, table: table));
         if (verbose) {
-          String msg = "Query complete in ${timer.elapsedMilliseconds} ms";
+          String msg = "Update complete in ${timer.elapsedMilliseconds} ms";
           print(msg);
         }
         return updated;
@@ -310,7 +310,7 @@ class Db {
         timer.stop();
         _changeFeedController.sink.add(DatabaseChangeEvent(type: DatabaseChange.delete, value: deleted, query: q, executionTime: timer.elapsedMicroseconds, table: table));
         if (verbose) {
-          String msg = "$q in ${timer.elapsedMilliseconds} ms";
+          String msg = "Delete Complete in ${timer.elapsedMilliseconds} ms";
           print(msg);
         }
         return deleted;
