@@ -255,7 +255,7 @@ class Db {
         timer.stop();
         _changeFeedController.sink.add(DatabaseChangeEvent(type: DatabaseChange.insert, value: 1, query: qStr.toString(), executionTime: timer.elapsedMicroseconds, table: table));
         if (verbose) {
-          String msg = "$q in ${timer.elapsedMilliseconds} ms";
+          String msg = "Query complete in ${timer.elapsedMilliseconds} ms";
           print(msg);
         }
       } on DatabaseNotReady catch (e) {
