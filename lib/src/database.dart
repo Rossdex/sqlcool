@@ -251,27 +251,9 @@ class Db {
       try {
         if (!_isReady) throw DatabaseNotReady();
         Stopwatch timer = Stopwatch()..start();
-        String fields = "";
-        String values = "";
-        int n = row.length;
-        int i = 1;
-        List<dynamic> datapoint = [];
-        for (var k in row.keys) {
-          fields = "$fields$k";
-          values = "$values?";
-          datapoint.add(row[k]);
-          if (i < n) {
-            fields = "$fields,";
-            values = "$values,";
-          }
-          i++;
-        }
-        String q = "INSERT INTO $table ($fields) VALUES($values)";
-        print(q);
-        id = await _db.rawInsert(q, datapoint);
-        String qStr = "$q $row";
+        int qStr = await this._db.insert(table, row);
         timer.stop();
-        _changeFeedController.sink.add(DatabaseChangeEvent(type: DatabaseChange.insert, value: 1, query: qStr, executionTime: timer.elapsedMicroseconds, table: table));
+        _changeFeedController.sink.add(DatabaseChangeEvent(type: DatabaseChange.insert, value: 1, query: qStr.toString(), executionTime: timer.elapsedMicroseconds, table: table));
         if (verbose) {
           String msg = "$q in ${timer.elapsedMilliseconds} ms";
           print(msg);
@@ -286,7 +268,7 @@ class Db {
   }
 
   /// Update some datapoints in the database
-  Future<int> update({@required String table, @required Map<String, dynamic> row,  @required String where, bool verbose = false}) async {
+  Future<int> update({@required String table, @required dynamic model, bool verbose = false}) async {
     /// [table] is the table to use, [row] is a map of the data to update
     /// and [where] the sql where clause
     ///
@@ -296,25 +278,12 @@ class Db {
       if (!_isReady) throw DatabaseNotReady();
       Stopwatch timer = Stopwatch()..start();
       try {
-        String pairs = "";
-        int n = row.length - 1;
-        int i = 0;
-        List<dynamic> datapoint = [];
-        for (var el in row.keys) {
-          pairs = "$pairs$el= ?";
-          datapoint.add(row[el]);
-          if (i < n) {
-            pairs = "$pairs, ";
-          }
-          i++;
-        }
-        String q = 'UPDATE $table SET $pairs WHERE $where';
-        updated = await this._db.rawUpdate(q, datapoint);
-        String qStr = "$q $datapoint";
+        Map<String, dynamic> map = model.toMap();
+        int qStr = await this._db.update(table, model.toMap(), where: "id = ?", whereArgs: [model.id]);
         timer.stop();
-        _changeFeedController.sink.add(DatabaseChangeEvent(type: DatabaseChange.update, value: updated, query: qStr, executionTime: timer.elapsedMicroseconds, table: table));
+        _changeFeedController.sink.add(DatabaseChangeEvent(type: DatabaseChange.update, value: updated, query: qStr.toString(), executionTime: timer.elapsedMicroseconds, table: table));
         if (verbose) {
-          String msg = "$q in ${timer.elapsedMilliseconds} ms";
+          String msg = "Query complete in ${timer.elapsedMilliseconds} ms";
           print(msg);
         }
         return updated;
@@ -328,7 +297,7 @@ class Db {
   }
 
   /// Delete some datapoints from the database
-  Future<int> delete({@required String table, String where, bool verbose = false}) async {
+  Future<int> delete({@required String table, int id, bool verbose = false}) async {
     /// [table] is the table to use and [where] the sql where clause
     ///
     /// Returns a future with a count of the deleted rows
@@ -337,12 +306,7 @@ class Db {
       if (!_isReady) throw DatabaseNotReady();
       try {
         Stopwatch timer = Stopwatch()..start();
-        String q = 'DELETE FROM $table';
-        if (where != null) {
-          q += 'WHERE $where';
-        }
-
-        int deleted = await this._db.rawDelete(q);
+        deleted = await _db.delete(table, where: "id = ?", whereArgs: [id]);
         timer.stop();
         _changeFeedController.sink.add(DatabaseChangeEvent(type: DatabaseChange.delete, value: deleted, query: q, executionTime: timer.elapsedMicroseconds, table: table));
         if (verbose) {
