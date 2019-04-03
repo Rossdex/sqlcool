@@ -268,7 +268,7 @@ class Db {
   }
 
   /// Update some datapoints in the database
-  Future<int> update({@required String table, @required dynamic model, bool verbose = false}) async {
+  Future<int> update({@required String table, @required Map<String, dynamic> row, bool verbose = false}) async {
     /// [table] is the table to use, [row] is a map of the data to update
     /// and [where] the sql where clause
     ///
@@ -278,8 +278,7 @@ class Db {
       if (!_isReady) throw DatabaseNotReady();
       Stopwatch timer = Stopwatch()..start();
       try {
-        Map<String, dynamic> map = model.toMap();
-        int qStr = await this._db.update(table, model.toMap(), where: "id = ?", whereArgs: [model.id]);
+        int qStr = await this._db.update(table, row, where: "id = ?", whereArgs: [row['id']]);
         timer.stop();
         _changeFeedController.sink.add(DatabaseChangeEvent(type: DatabaseChange.update, value: updated, query: qStr.toString(), executionTime: timer.elapsedMicroseconds, table: table));
         if (verbose) {
