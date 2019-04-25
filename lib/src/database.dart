@@ -251,7 +251,7 @@ class Db {
       try {
         if (!_isReady) throw DatabaseNotReady();
         Stopwatch timer = Stopwatch()..start();
-        int qStr = await this._db.insert(table, row);
+        qStr = await this._db.insert(table, row);
         timer.stop();
         _changeFeedController.sink.add(DatabaseChangeEvent(type: DatabaseChange.insert, value: 1, query: qStr.toString(), executionTime: timer.elapsedMicroseconds, table: table));
         if (verbose) {
