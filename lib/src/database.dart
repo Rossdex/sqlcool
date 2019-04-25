@@ -245,7 +245,7 @@ class Db {
     /// to insert
     ///
     /// Returns a future with the last inserted id
-    int id;
+    int qStr;
 
     await _mutex.synchronized(() async {
       try {
@@ -264,7 +264,7 @@ class Db {
         throw (e);
       }
     });
-    return id;
+    return qStr;
   }
 
   /// Update some datapoints in the database
